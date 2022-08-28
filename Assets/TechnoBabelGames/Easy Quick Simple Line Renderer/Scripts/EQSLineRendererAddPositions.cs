@@ -9,6 +9,13 @@ namespace TechnoBabelGames
         private Transform[] points;
         public enum BasicShape { None, Line, Triangle}
         public BasicShape basicShape;
+        Transform parentTransform;
+        float pointOffset = 3f;
+
+        private void OnEnable()
+        {
+            parentTransform = transform.GetComponentInParent<Transform>();
+        }
 
         void Start()
         {
@@ -31,39 +38,20 @@ namespace TechnoBabelGames
             }            
         }
 
-        private void DrawBasicShape(BasicShape shape)
+        public void DrawBasicShape(BasicShape shape)
         {
             if (shape == BasicShape.None)
+            {
+                SetPoints();
                 return;
+            }                
 
             switch (shape)
             {
                 case BasicShape.Line:
 
-                    Transform parentTransform = transform.GetComponentInParent<Transform>();
-
-                    if(parentTransform.rotation.x == 90f) //Alignment Y
-                    {
-
-                    }
-                    else if (parentTransform.rotation.y == 90f) //Alignment X
-                    {
-
-                    }
-                    else if (parentTransform.rotation.z == 90f) //Alignment Z
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-
                     var transforms = transform.GetComponentsInChildren<Transform>().Skip(1).ToArray();
-                    for (int i = 1; i < transforms.Length; i++)
-                    {
-
-                    }
+                    transforms[1].position = new Vector3(transforms[0].position.x, transforms[0].position.y, transforms[0].position.z + (pointOffset));
 
                     break;
                 case BasicShape.Triangle:
@@ -72,6 +60,7 @@ namespace TechnoBabelGames
                     break;
             }
 
+            SetPoints();
         }
     }
 }

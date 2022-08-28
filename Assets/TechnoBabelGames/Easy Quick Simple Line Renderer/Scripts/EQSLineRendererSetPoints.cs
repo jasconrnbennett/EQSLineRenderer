@@ -16,10 +16,10 @@ namespace TechnoBabelGames
 
         public override void OnInspectorGUI()
         {
-            GUILayout.Label("Click 'Preview' if the line does not update", EditorStyles.boldLabel);
-            if (GUILayout.Button("Preview"))
+            GUILayout.Label("Click to reset to the original basic shape", EditorStyles.boldLabel);
+            if (GUILayout.Button("Draw Shape"))
             {
-                monoScript.SetPoints();
+                monoScript.DrawBasicShape(monoScript.basicShape);
             }
         }
 

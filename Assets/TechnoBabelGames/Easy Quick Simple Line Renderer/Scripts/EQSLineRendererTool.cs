@@ -37,21 +37,6 @@ namespace TechnoBabelGames
 
         private void OnGUI()
         {
-            //GUILayout.Space(8);
-            //GUILayout.Label("Create Line Renderer", EditorStyles.boldLabel);
-            //GUILayout.Space(8);
-            //lineName = EditorGUILayout.TextField("Object name", lineName);
-            //GUILayout.Space(8);
-            //linePoints = EditorGUILayout.IntSlider("Number of points", linePoints, 2, 10);
-            //GUILayout.Space(8);
-
-            //EditorGUI.indentLevel++;
-
-            //EditorGUI.indentLevel--;
-
-            //GUILayout.Space(8);
-            //alignment = (Alignment)EditorGUILayout.EnumPopup("Axis", alignment);
-
             DrawUILine(Color.gray);
             GUILayout.Space(8);
             GUILayoutLineVisualProperties();
@@ -71,7 +56,6 @@ namespace TechnoBabelGames
             DrawUILine(Color.gray);
 
             //GUILayoutTestFields();
-
         }
 
         //Width & Rounded Corners/End Caps
@@ -86,12 +70,10 @@ namespace TechnoBabelGames
 
             GUILayout.Space(8);
 
-            //EditorGUILayout.BeginHorizontal();
             EditorGUI.indentLevel++;
             roundEndCaps = EditorGUILayout.Toggle("Rounded End Caps", roundEndCaps);
             roundCorners = EditorGUILayout.Toggle("Rounded Corners", roundCorners);
             EditorGUI.indentLevel--;
-            //EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel--;
         }
 
@@ -104,12 +86,10 @@ namespace TechnoBabelGames
                 hiddenGradient = hiddenMaterial = false;
             }
 
-
             if (hiddenGradient = EditorGUILayout.ToggleLeft("Gradient", hiddenGradient, GUILayout.Width(133.33f)))
             {
                 hiddenSolidColor = hiddenMaterial = false;
             }
-
 
             if (hiddenMaterial = EditorGUILayout.ToggleLeft("Texture", hiddenMaterial, GUILayout.Width(133.33f)))
             {
@@ -153,35 +133,6 @@ namespace TechnoBabelGames
             }
             EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
-
-
-
-            //GUILayout.Space(8);
-
-            //EditorGUI.indentLevel++;
-
-            //if (hiddenSolidColor)
-            //{
-            //    startColor = EditorGUILayout.ColorField("Line color", startColor);
-            //}
-            //else if (hiddenGradient)
-            //{
-            //    startColor = EditorGUILayout.ColorField("Start color", startColor);
-            //    endColor = EditorGUILayout.ColorField("End color", endColor);
-            //}
-            //else if (hiddenMaterial)
-            //{
-            //    lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
-            //    if (lineMaterial == null)
-            //    {
-            //        //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
-            //        EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
-            //    }
-            //    lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
-
-            //}
-
-            //EditorGUI.indentLevel--;
         }
 
         void GUILayoutLineTechnicalProperties()
@@ -213,7 +164,7 @@ namespace TechnoBabelGames
                     closeLineLoop = false;
                     break;
                 case LinePointsShape.Triangle:
-                    linePoints = 2;
+                    linePoints = 3;
                     closeLineLoop = true;
                     break;
                 default:
@@ -297,8 +248,9 @@ namespace TechnoBabelGames
 
             //Add Line Renderer
             lineContainerGO.AddComponent<LineRenderer>();
-            lineContainerGO.AddComponent<EQSLineRendererAddPositions>();
-            LineRenderer lineRenderer = lineContainerGO.GetComponent<LineRenderer>();
+            EQSLineRendererAddPositions eqsLineRendererAddPositions = lineContainerGO.AddComponent<EQSLineRendererAddPositions>();
+            LineRenderer lineRenderer = lineContainerGO.GetComponent<LineRenderer>();            
+
             lineRenderer.startWidth = lineRenderer.endWidth = lineWidth;
             lineRenderer.positionCount = linePoints;
 
@@ -338,11 +290,26 @@ namespace TechnoBabelGames
                 lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
             }
 
-            if (hiddenSolidColor)  //Fix This bug
+            if (hiddenSolidColor)
                 endColor = startColor;
 
             lineRenderer.startColor = startColor;
             lineRenderer.endColor = endColor;
+
+            switch (linePointsShape)
+            {
+                case LinePointsShape.Custom:
+                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.None;
+                    break;
+                case LinePointsShape.Line:
+                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Line;
+                    break;
+                case LinePointsShape.Triangle:
+                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Triangle;
+                    break;
+                default:
+                    break;
+            }
 
             //Create Child Objects
             GameObject pointsGO;
@@ -364,8 +331,10 @@ namespace TechnoBabelGames
                     gizmoTarget = pointsGO.transform;
                 }
                 pointsGO.transform.SetParent(lineContainerGO.transform);
-                pointsGO.GetComponent<EQSLinerRendererDrawGizmo>().parent = lineContainerGO.GetComponent<EQSLineRendererAddPositions>();
+                pointsGO.GetComponent<EQSLinerRendererDrawGizmo>().parent = eqsLineRendererAddPositions;
             }
+
+            eqsLineRendererAddPositions.DrawBasicShape(eqsLineRendererAddPositions.basicShape);
         }
     }
 }
