@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using UnityEditor;
 
 namespace TechnoBabelGames
 {
@@ -26,6 +27,8 @@ namespace TechnoBabelGames
                 lineRenderer.SetPosition(i, v3);
 
             }
+
+            //EditorWindow.GetWindow<SceneView>().Repaint();
         }
     }
 }

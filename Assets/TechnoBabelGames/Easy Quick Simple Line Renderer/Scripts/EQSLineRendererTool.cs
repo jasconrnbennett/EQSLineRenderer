@@ -364,6 +364,7 @@ namespace TechnoBabelGames
                     gizmoTarget = pointsGO.transform;
                 }
                 pointsGO.transform.SetParent(lineContainerGO.transform);
+                pointsGO.GetComponent<EQSLinerRendererDrawGizmo>().parent = lineContainerGO.GetComponent<EQSLineRendererAddPositions>();
             }
         }
     }

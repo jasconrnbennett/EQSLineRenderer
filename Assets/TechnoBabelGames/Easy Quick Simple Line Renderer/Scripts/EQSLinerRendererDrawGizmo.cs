@@ -6,6 +6,8 @@ namespace TechnoBabelGames
     {
         [HideInInspector]
         public Transform targetPoint;
+        [HideInInspector]
+        public EQSLineRendererAddPositions parent;
 
         private void OnDrawGizmos()
         {
@@ -16,6 +18,8 @@ namespace TechnoBabelGames
             }
             Gizmos.DrawWireSphere(this.transform.position, 0.2f);
             Gizmos.DrawIcon(transform.position, "sv_icon_dot8_sml"/*"scenepicking_pickable-mixed_hover"*/);
+
+            parent.SetPoints();
         }
     }
 }
