@@ -22,18 +22,16 @@ namespace TechnoBabelGames
         bool roundCorners;
         bool roundEndCaps;
         Vector2 scrollPosition;
-        //AnimBool hiddenValues;
 
         [MenuItem("Tools/TechnoBabelGames/EQS Line Renderer")]
         public static void ShowWindow()
         {
             EQSLineRendererTool window = (EQSLineRendererTool)GetWindow(typeof(EQSLineRendererTool), false, "EQS Line Renderer");
-            window.minSize = window.maxSize = new Vector2(400, 400);
+            window.minSize = /*window.maxSize =*/ new Vector2(400, 400);
         }
 
         private void OnGUI()
         {
-            //scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUIStyle.none, GUI.skin.verticalScrollbar);
             GUILayout.Space(8);
             GUILayout.Label("Create Line Renderer", EditorStyles.boldLabel);
             GUILayout.Space(8);
@@ -62,26 +60,12 @@ namespace TechnoBabelGames
             GUILayoutButton();
 
 
-            GUILayoutTestFields();
+            //GUILayoutTestFields();
 
-            //GUILayout.EndScrollView();
         }
 
         void GUILayoutToggleHidden()
         {
-            //Rect solidColorRect = new Rect();
-            //solidColorRect.x = 0;
-            //solidColorRect.width = Screen.width / 3f;
-            //solidColorRect.height = 20;
-
-            //Rect gradientRect = new Rect();
-            //gradientRect.x = Screen.width / 3f;
-            //gradientRect.width = Screen.width / 3;
-
-            //Rect materialRect = new Rect();
-            //materialRect.x = (Screen.width / 3f) * 2;
-            //materialRect.width = Screen.width / 3;
-
             EditorGUILayout.BeginHorizontal(GUILayout.Width(133.33f));
 
             if (hiddenSolidColor = EditorGUILayout.ToggleLeft("Solid Color", hiddenSolidColor, GUILayout.Width(133.33f)))
@@ -121,7 +105,13 @@ namespace TechnoBabelGames
             else if (hiddenMaterial)
             {
                 lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
+                if (lineMaterial == null)
+                {
+                    //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
+                    EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
+                }
                 lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
+                
             }
 
             EditorGUI.indentLevel--;
@@ -132,22 +122,26 @@ namespace TechnoBabelGames
             GUILayout.Space(12);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
+            EditorGUI.BeginDisabledGroup(hiddenMaterial && lineMaterial == null);
             if (GUILayout.Button("Create Line", GUILayout.Width(120), GUILayout.Height(60)))
             {
                 CreateAutoLine();
             }
+            EditorGUI.EndDisabledGroup();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(12);
-            GUILayout.Label("Warning!");
-            GUILayout.Label("DO NOT REARRANGE THE CHILD OBJECTS - DO NOT ADJUST THE ROTATION OF THE OBJECTS", EditorStyles.helpBox);
+            EditorGUILayout.HelpBox("DO NOT REARRANGE THE CHILD OBJECTS - DO NOT ADJUST THE ROTATION OF THE OBJECTS", MessageType.Warning);
         }
 
         void GUILayoutTestFields()
         {
-            GUILayout.Space(42);
-            float testFloat = Screen.width / 3f;
-            GUILayout.Label(testFloat.ToString(), EditorStyles.helpBox);
+            GUILayout.Space(12);
+            //float testFloat = Screen.width / 3f;
+            float testIntX = EditorGUIUtility.GetIconSize().x;
+            float testIntY = EditorGUIUtility.GetIconSize().y;
+            string testString = testIntX.ToString() +", "+ testIntY.ToString();
+            GUILayout.Label(testString, EditorStyles.helpBox);
         }
 
         private void CreateAutoLine()
@@ -212,7 +206,7 @@ namespace TechnoBabelGames
                 lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
             }
 
-            if (hiddenSolidColor)
+            if (hiddenSolidColor)  //Fix This bug
                 startColor = endColor;
 
             lineRenderer.startColor = startColor;
