@@ -11,17 +11,22 @@ namespace TechnoBabelGames
         float lineWidth = 0.5f;
         Color startColor = Color.white;
         Color endColor = Color.white;
-        enum Alignment { CameraView, X, Y, Z}
+        enum Alignment { FaceCamera, X, Y, Z}
         Alignment alignment;
         bool hiddenSolidColor = true;
         bool hiddenGradient;
         bool hiddenMaterial;
         Material lineMaterial;
+        enum LineColoring { SolidColor, Gradient, Texture}
+        LineColoring lineColoring;
         enum LineMaterial { Stretch, Tile}
         LineMaterial lineMaterialEnum;
+        enum LinePointsShape { Custom, Line, Triangle}
+        LinePointsShape linePointsShape;
         bool roundCorners;
         bool roundEndCaps;
         Vector2 scrollPosition;
+        bool closeLineLoop = false;
 
         [MenuItem("Tools/TechnoBabelGames/EQS Line Renderer")]
         public static void ShowWindow()
@@ -32,36 +37,62 @@ namespace TechnoBabelGames
 
         private void OnGUI()
         {
-            GUILayout.Space(8);
-            GUILayout.Label("Create Line Renderer", EditorStyles.boldLabel);
-            GUILayout.Space(8);
-            lineName = EditorGUILayout.TextField("Object name", lineName);
-            GUILayout.Space(8);
-            linePoints = EditorGUILayout.IntSlider("Number of points", linePoints, 2, 10);
-            GUILayout.Space(8);
+            //GUILayout.Space(8);
+            //GUILayout.Label("Create Line Renderer", EditorStyles.boldLabel);
+            //GUILayout.Space(8);
+            //lineName = EditorGUILayout.TextField("Object name", lineName);
+            //GUILayout.Space(8);
+            //linePoints = EditorGUILayout.IntSlider("Number of points", linePoints, 2, 10);
+            //GUILayout.Space(8);
 
-            EditorGUI.indentLevel++;
-            EditorGUILayout.BeginHorizontal();
+            //EditorGUI.indentLevel++;
 
-            roundEndCaps = EditorGUILayout.ToggleLeft("Rounded end caps", roundEndCaps);
-            roundCorners = EditorGUILayout.ToggleLeft("Rounded corners", roundCorners);            
+            //EditorGUI.indentLevel--;
 
-            EditorGUILayout.EndHorizontal();
-            EditorGUI.indentLevel--;
+            //GUILayout.Space(8);
+            //alignment = (Alignment)EditorGUILayout.EnumPopup("Axis", alignment);
 
+            DrawUILine(Color.gray);
             GUILayout.Space(8);
-            alignment = (Alignment)EditorGUILayout.EnumPopup("Axis", alignment);
+            GUILayoutLineVisualProperties();
             GUILayout.Space(8);
-            lineWidth = EditorGUILayout.Slider("Line width", lineWidth, 0, 1);
+            DrawUILine(Color.gray);
             GUILayout.Space(8);
-
-            GUILayoutToggleHidden();
-            GUILayoutLineColor();
+            GUILayoutLineColoring();
+            GUILayout.Space(8);
+            DrawUILine(Color.gray);
+            GUILayout.Space(8);
+            GUILayoutLineTechnicalProperties();
+            GUILayout.Space(8);
+            DrawUILine(Color.gray);
+            GUILayout.Space(8);
             GUILayoutButton();
-
+            GUILayout.Space(8);
+            DrawUILine(Color.gray);
 
             //GUILayoutTestFields();
 
+        }
+
+        //Width & Rounded Corners/End Caps
+        void GUILayoutLineVisualProperties()
+        {
+            EditorGUILayout.LabelField("Visual Properties", EditorStyles.boldLabel);
+
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+            lineWidth = EditorGUILayout.Slider("Line width", lineWidth, 0, 1);
+
+            GUILayout.Space(8);
+
+            //EditorGUILayout.BeginHorizontal();
+            EditorGUI.indentLevel++;
+            roundEndCaps = EditorGUILayout.Toggle("Rounded End Caps", roundEndCaps);
+            roundCorners = EditorGUILayout.Toggle("Rounded Corners", roundCorners);
+            EditorGUI.indentLevel--;
+            //EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel--;
         }
 
         void GUILayoutToggleHidden()
@@ -87,38 +118,122 @@ namespace TechnoBabelGames
             EditorGUILayout.EndHorizontal();
         }
 
-        void GUILayoutLineColor()
+        void GUILayoutLineColoring()
         {
+            EditorGUILayout.LabelField("Line Coloring", EditorStyles.boldLabel);
+
             GUILayout.Space(8);
 
             EditorGUI.indentLevel++;
+            lineColoring = (LineColoring)EditorGUILayout.EnumPopup("Coloring Type", lineColoring);
 
-            if (hiddenSolidColor)
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+            switch (lineColoring)
             {
-                startColor = EditorGUILayout.ColorField("Line color", startColor);
+                case LineColoring.SolidColor:
+                    startColor = EditorGUILayout.ColorField("Line Color", startColor);
+                    break;
+                case LineColoring.Gradient:
+                    startColor = EditorGUILayout.ColorField("Start Color", startColor);
+                    endColor = EditorGUILayout.ColorField("End Color", endColor);
+                    break;
+                case LineColoring.Texture:
+                    lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
+                    if (lineMaterial == null)
+                    {
+                        //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
+                        EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
+                    }
+                    lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
+                    break;
+                default:
+                    break;
             }
-            else if (hiddenGradient)
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
+
+
+
+            //GUILayout.Space(8);
+
+            //EditorGUI.indentLevel++;
+
+            //if (hiddenSolidColor)
+            //{
+            //    startColor = EditorGUILayout.ColorField("Line color", startColor);
+            //}
+            //else if (hiddenGradient)
+            //{
+            //    startColor = EditorGUILayout.ColorField("Start color", startColor);
+            //    endColor = EditorGUILayout.ColorField("End color", endColor);
+            //}
+            //else if (hiddenMaterial)
+            //{
+            //    lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
+            //    if (lineMaterial == null)
+            //    {
+            //        //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
+            //        EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
+            //    }
+            //    lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
+
+            //}
+
+            //EditorGUI.indentLevel--;
+        }
+
+        void GUILayoutLineTechnicalProperties()
+        {
+            EditorGUILayout.LabelField("Technical Properties", EditorStyles.boldLabel);
+
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+            linePointsShape = (LinePointsShape)EditorGUILayout.EnumPopup("Starting Shape", linePointsShape);
+
+            switch (linePointsShape)
             {
-                startColor = EditorGUILayout.ColorField("Start color", startColor);
-                endColor = EditorGUILayout.ColorField("End color", endColor);
-            }
-            else if (hiddenMaterial)
-            {
-                lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
-                if (lineMaterial == null)
-                {
-                    //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
-                    EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
-                }
-                lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
-                
+                case LinePointsShape.Custom:
+                    GUILayout.Space(8);
+
+                    EditorGUI.indentLevel++;
+                    linePoints = EditorGUILayout.IntField("Points", linePoints);
+                    if(linePoints < 2)
+                        linePoints = 2;
+
+                    GUILayout.Space(8);
+
+                    closeLineLoop = EditorGUILayout.Toggle("Close Loop", closeLineLoop);
+                    EditorGUI.indentLevel--;
+                    break;
+                case LinePointsShape.Line:
+                    linePoints = 2;
+                    closeLineLoop = false;
+                    break;
+                case LinePointsShape.Triangle:
+                    linePoints = 2;
+                    closeLineLoop = true;
+                    break;
+                default:
+                    break;
             }
 
+            GUILayout.Space(8);
+
+            alignment = (Alignment)EditorGUILayout.EnumPopup("Facing Axis", alignment);
             EditorGUI.indentLevel--;
         }
 
         void GUILayoutButton()
         {
+            EditorGUILayout.LabelField("Create GameObject", EditorStyles.boldLabel);
+
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+            lineName = EditorGUILayout.TextField("Object Name", lineName);
             GUILayout.Space(12);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -130,8 +245,20 @@ namespace TechnoBabelGames
             EditorGUI.EndDisabledGroup();
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            EditorGUI.indentLevel--;
+
             GUILayout.Space(12);
             EditorGUILayout.HelpBox("DO NOT REARRANGE THE CHILD OBJECTS - DO NOT ADJUST THE ROTATION OF THE OBJECTS", MessageType.Warning);
+        }
+
+        public static void DrawUILine(Color color, int thickness = 2, int padding = 10)
+        {
+            Rect r = EditorGUILayout.GetControlRect(GUILayout.Height(padding + thickness));
+            r.height = thickness;
+            r.y += padding / 2;
+            r.x -= 2;
+            r.width += 6;
+            EditorGUI.DrawRect(r, color);
         }
 
         void GUILayoutTestFields()
@@ -152,7 +279,7 @@ namespace TechnoBabelGames
 
             switch (alignment)
             {
-                case Alignment.CameraView:
+                case Alignment.FaceCamera:
                     lineContainerGO.transform.Rotate(0, 0, 0);
                     break;
                 case Alignment.X:
@@ -180,7 +307,12 @@ namespace TechnoBabelGames
             if (roundCorners)
                 lineRenderer.numCornerVertices = 10;
 
-            if (alignment == Alignment.CameraView)
+            if (closeLineLoop)
+                lineRenderer.loop = true;
+            else
+                lineRenderer.loop = false;
+
+            if (alignment == Alignment.FaceCamera)
                 lineRenderer.alignment = LineAlignment.View;
             else
                 lineRenderer.alignment = LineAlignment.TransformZ;
