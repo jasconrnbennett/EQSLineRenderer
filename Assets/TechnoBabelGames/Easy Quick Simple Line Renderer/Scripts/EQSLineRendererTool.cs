@@ -207,7 +207,7 @@ namespace TechnoBabelGames
             }
 
             if (hiddenSolidColor)  //Fix This bug
-                startColor = endColor;
+                endColor = startColor;
 
             lineRenderer.startColor = startColor;
             lineRenderer.endColor = endColor;
@@ -215,7 +215,7 @@ namespace TechnoBabelGames
             //Create Child Objects
             GameObject pointsGO;
             Transform gizmoTarget = lineContainerGO.transform;
-            for (int i = 1; i <= linePoints; i++)  //Start at 2 because the parent is point 1
+            for (int i = 1; i <= linePoints; i++)
             {
                 if (i == linePoints)
                 {
