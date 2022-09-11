@@ -323,23 +323,10 @@ namespace TechnoBabelGames
                     break;
             }
 
-            switch (linePointsShape)
-            {
-                case LinePointsShape.Custom:
-                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.None;
-                    break;
-                case LinePointsShape.Line:
-                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Line;
-                    break;
-                case LinePointsShape.Triangle:
-                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Triangle;
-                    break;
-                case LinePointsShape.Square:
-                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Square;
-                    break;
-                default:
-                    break;
-            }
+            if (linePointsShape == LinePointsShape.Custom)
+                eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Custom;
+            else
+                eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Preset;
 
             eqsLineRendererAddPositions.pointOffset = shapeSize;
 

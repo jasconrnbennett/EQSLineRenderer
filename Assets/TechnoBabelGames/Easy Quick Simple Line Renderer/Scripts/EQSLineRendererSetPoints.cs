@@ -59,7 +59,7 @@ namespace TechnoBabelGames
             if (showShapeAdjustments)
             {
                 EditorGUI.indentLevel++;
-                if (monoScript.basicShape == EQSLineRendererAddPositions.BasicShape.None)
+                if (monoScript.basicShape == EQSLineRendererAddPositions.BasicShape.Custom)
                 {
                     EditorGUILayout.HelpBox("The size of custom shapes cannot be adjusted.", MessageType.Info);
                 }

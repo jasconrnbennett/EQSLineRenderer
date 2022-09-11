@@ -8,7 +8,7 @@ namespace TechnoBabelGames
     public class EQSLineRendererAddPositions : MonoBehaviour
     {
         private Transform[] points;
-        public enum BasicShape { None, Line, Triangle, Square}
+        public enum BasicShape { Custom, Preset}
         public BasicShape basicShape;
         Transform parentTransform;
         public float pointOffset;        
@@ -41,7 +41,7 @@ namespace TechnoBabelGames
 
         public void DrawBasicShape(BasicShape shape)
         {
-            if (shape == BasicShape.None)
+            if (shape == BasicShape.Custom)
             {
                 SetPoints();
                 return;
