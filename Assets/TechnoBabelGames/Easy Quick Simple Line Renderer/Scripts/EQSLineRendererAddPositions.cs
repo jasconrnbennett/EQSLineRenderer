@@ -48,71 +48,11 @@ namespace TechnoBabelGames
             }
 
             var transforms = transform.GetComponentsInChildren<Transform>().Skip(1).ToArray();
+            List<Vector2> points = GetPolygonOnACircle(transforms.Length, pointOffset/2, Vector2.zero);
 
-            switch (shape)
+            for (int i = 0; i < transforms.Length; i++)
             {
-                case BasicShape.Line:
-                    //List<Vector2> points = GetPolygonOnACircle(2, 3, Vector2.zero);
-                    //Debug.Log(points[0] + ", " + points[1]);
-                    if (transform.eulerAngles.z == 90f || transform.eulerAngles == Vector3.zero)
-                    {
-                        transforms[1].position = new Vector3(transforms[0].position.x + (pointOffset), transforms[0].position.y, transforms[0].position.z);
-                    }
-                    else
-                    {
-                        transforms[1].position = new Vector3(transforms[0].position.x, transforms[0].position.y, transforms[0].position.z + (pointOffset));
-                    }
-
-                    break;
-                case BasicShape.Triangle:
-                    List<Vector2> points = GetPolygonOnACircle(3, 3, Vector2.zero);
-                    Debug.Log($"{points[0]}, {points[1]}, {points[2]}");
-
-                    for (int i = 0; i < transforms.Length; i++)
-                    {
-                        transforms[i].localPosition = points[i];
-                    }
-                    //if (transform.eulerAngles.x == 90f) // Facing Up (Y)
-                    //{
-                    //    transforms[1].position = new Vector3(transforms[0].position.x + (pointOffset), transforms[0].position.y, transforms[0].position.z);
-                    //    transforms[2].position = new Vector3(transforms[0].position.x + (pointOffset / 2), transforms[0].position.y, transforms[0].position.z + (pointOffset / 2));
-                    //}
-                    //else if (transform.eulerAngles.y == 90f) // Facing Right (X)
-                    //{
-                    //    transforms[1].position = new Vector3(transforms[0].position.x, transforms[0].position.y, transforms[0].position.z + (pointOffset));
-                    //    transforms[2].position = new Vector3(transforms[0].position.x, transforms[0].position.y + (pointOffset / 2), transforms[0].position.z + (pointOffset / 2));
-                    //}
-                    //else  // Facing Forward (Z) & Camera
-                    //{
-                    //    transforms[1].position = new Vector3(transforms[0].position.x + (pointOffset), transforms[0].position.y, transforms[0].position.z);
-                    //    transforms[2].position = new Vector3(transforms[0].position.x + (pointOffset / 2), transforms[0].position.y + (pointOffset / 2), transforms[0].position.z);
-                    //}
-
-                    break;
-                case BasicShape.Square:
-                    GetPolygonOnACircle(4, 3, Vector2.zero);
-                    if (transform.eulerAngles.x == 90f) // Facing Up (Y)
-                    {
-                        transforms[1].position = new Vector3(transforms[0].position.x + (pointOffset), transforms[0].position.y, transforms[0].position.z);
-                        transforms[2].position = new Vector3(transforms[1].position.x, transforms[1].position.y, transforms[1].position.z + (pointOffset));
-                        transforms[3].position = new Vector3(transforms[2].position.x - (pointOffset), transforms[2].position.y, transforms[2].position.z);
-                    }
-                    else if (transform.eulerAngles.y == 90f) // Facing Right (X)
-                    {
-                        transforms[1].position = new Vector3(transforms[0].position.x, transforms[0].position.y, transforms[0].position.z + (pointOffset));
-                        transforms[2].position = new Vector3(transforms[1].position.x, transforms[1].position.y + (pointOffset), transforms[1].position.z);
-                        transforms[3].position = new Vector3(transforms[2].position.x, transforms[2].position.y, transforms[2].position.z - (pointOffset));
-                    }
-                    else  // Facing Forward (Z) & Camera
-                    {
-                        transforms[1].position = new Vector3(transforms[0].position.x + (pointOffset), transforms[0].position.y, transforms[0].position.z);
-                        transforms[2].position = new Vector3(transforms[1].position.x, transforms[1].position.y + (pointOffset), transforms[1].position.z);
-                        transforms[3].position = new Vector3(transforms[2].position.x - (pointOffset), transforms[2].position.y, transforms[2].position.z);
-                    }
-
-                    break;
-                default:
-                    break;
+                transforms[i].localPosition = points[i];
             }
             
             SetPoints();

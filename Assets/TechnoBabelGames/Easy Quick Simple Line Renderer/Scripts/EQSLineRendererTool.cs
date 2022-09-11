@@ -13,15 +13,12 @@ namespace TechnoBabelGames
         Color endColor = Color.white;
         enum Alignment { FaceCamera, X, Y, Z}
         Alignment alignment;
-        bool hiddenSolidColor = true;
-        bool hiddenGradient;
-        bool hiddenMaterial;
         Material lineMaterial;
         enum LineColoring { SolidColor, Gradient, Texture}
         LineColoring lineColoring;
         enum LineMaterial { Stretch, Tile}
         LineMaterial lineMaterialEnum;
-        enum LinePointsShape { Custom, Line, Triangle, Square}
+        enum LinePointsShape { Custom, Line, Triangle, Square, Pentagon, Hexagon, Heptagon, Octagon, Nonagon, Decagon}
         LinePointsShape linePointsShape;
         bool roundCorners;
         bool roundEndCaps;
@@ -76,27 +73,6 @@ namespace TechnoBabelGames
             roundCorners = EditorGUILayout.Toggle("Rounded Corners", roundCorners);
             EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
-        }
-
-        void GUILayoutToggleHidden()
-        {
-            EditorGUILayout.BeginHorizontal(GUILayout.Width(133.33f));
-
-            if (hiddenSolidColor = EditorGUILayout.ToggleLeft("Solid Color", hiddenSolidColor, GUILayout.Width(133.33f)))
-            {
-                hiddenGradient = hiddenMaterial = false;
-            }
-
-            if (hiddenGradient = EditorGUILayout.ToggleLeft("Gradient", hiddenGradient, GUILayout.Width(133.33f)))
-            {
-                hiddenSolidColor = hiddenMaterial = false;
-            }
-
-            if (hiddenMaterial = EditorGUILayout.ToggleLeft("Texture", hiddenMaterial, GUILayout.Width(133.33f)))
-            {
-                hiddenSolidColor = hiddenGradient = false;
-            }
-            EditorGUILayout.EndHorizontal();
         }
 
         void GUILayoutLineColoring()
@@ -175,6 +151,36 @@ namespace TechnoBabelGames
                     linePoints = 4;
                     closeLineLoop = true;
                     break;
+                case LinePointsShape.Pentagon:
+                    GUILayoutShapeSize();
+                    linePoints = 5;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Hexagon:
+                    GUILayoutShapeSize();
+                    linePoints = 6;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Heptagon:
+                    GUILayoutShapeSize();
+                    linePoints = 7;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Octagon:
+                    GUILayoutShapeSize();
+                    linePoints = 8;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Nonagon:
+                    GUILayoutShapeSize();
+                    linePoints = 9;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Decagon:
+                    GUILayoutShapeSize();
+                    linePoints = 10;
+                    closeLineLoop = true;
+                    break;
                 default:
                     break;
             }
@@ -196,7 +202,7 @@ namespace TechnoBabelGames
             GUILayout.Space(12);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            EditorGUI.BeginDisabledGroup(hiddenMaterial && lineMaterial == null);
+            EditorGUI.BeginDisabledGroup(lineColoring == LineColoring.Texture && lineMaterial == null);
             if (GUILayout.Button("Create Line", GUILayout.Width(120), GUILayout.Height(60)))
             {
                 CreateAutoLine();
@@ -286,32 +292,36 @@ namespace TechnoBabelGames
             else
                 lineRenderer.alignment = LineAlignment.TransformZ;
 
-            if (hiddenMaterial)
+            switch (lineColoring)
             {
-                lineRenderer.material = lineMaterial;
-                switch (lineMaterialEnum)
-                {
-                    case LineMaterial.Stretch:
-                        lineRenderer.textureMode = LineTextureMode.Stretch;
-                        break;
-                    case LineMaterial.Tile:
-                        lineRenderer.textureMode = LineTextureMode.Tile;
-                        break;
-                    default:
-                        break;
-                }
-                lineRenderer.startColor = lineRenderer.endColor = Color.white;
+                case LineColoring.SolidColor:
+                    lineRenderer.startColor = startColor;
+                    lineRenderer.endColor = startColor;
+                    lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                    break;
+                case LineColoring.Gradient:
+                    lineRenderer.startColor = startColor;
+                    lineRenderer.endColor = endColor;
+                    lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                    break;
+                case LineColoring.Texture:
+                    lineRenderer.material = lineMaterial;
+                    switch (lineMaterialEnum)
+                    {
+                        case LineMaterial.Stretch:
+                            lineRenderer.textureMode = LineTextureMode.Stretch;
+                            break;
+                        case LineMaterial.Tile:
+                            lineRenderer.textureMode = LineTextureMode.Tile;
+                            break;
+                        default:
+                            break;
+                    }
+                    lineRenderer.startColor = lineRenderer.endColor = Color.white;
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            }
-
-            if (hiddenSolidColor)
-                endColor = startColor;
-
-            lineRenderer.startColor = startColor;
-            lineRenderer.endColor = endColor;
 
             switch (linePointsShape)
             {
