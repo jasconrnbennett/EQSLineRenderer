@@ -21,12 +21,13 @@ namespace TechnoBabelGames
         LineColoring lineColoring;
         enum LineMaterial { Stretch, Tile}
         LineMaterial lineMaterialEnum;
-        enum LinePointsShape { Custom, Line, Triangle}
+        enum LinePointsShape { Custom, Line, Triangle, Square}
         LinePointsShape linePointsShape;
         bool roundCorners;
         bool roundEndCaps;
         Vector2 scrollPosition;
         bool closeLineLoop = false;
+        float shapeSize = 3;
 
         [MenuItem("Tools/TechnoBabelGames/EQS Line Renderer")]
         public static void ShowWindow()
@@ -66,7 +67,7 @@ namespace TechnoBabelGames
             GUILayout.Space(8);
 
             EditorGUI.indentLevel++;
-            lineWidth = EditorGUILayout.Slider("Line width", lineWidth, 0, 1);
+            lineWidth = EditorGUILayout.Slider("Line width", lineWidth, 0.01f, 1);
 
             GUILayout.Space(8);
 
@@ -160,11 +161,18 @@ namespace TechnoBabelGames
                     EditorGUI.indentLevel--;
                     break;
                 case LinePointsShape.Line:
+                    GUILayoutShapeSize();
                     linePoints = 2;
                     closeLineLoop = false;
                     break;
                 case LinePointsShape.Triangle:
+                    GUILayoutShapeSize();
                     linePoints = 3;
+                    closeLineLoop = true;
+                    break;
+                case LinePointsShape.Square:
+                    GUILayoutShapeSize();
+                    linePoints = 4;
                     closeLineLoop = true;
                     break;
                 default:
@@ -210,6 +218,15 @@ namespace TechnoBabelGames
             r.x -= 2;
             r.width += 6;
             EditorGUI.DrawRect(r, color);
+        }
+
+        void GUILayoutShapeSize()
+        {
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+            shapeSize = EditorGUILayout.Slider("Shape Size", shapeSize, 0.5f, 10);
+            EditorGUI.indentLevel--;
         }
 
         void GUILayoutTestFields()
@@ -307,9 +324,15 @@ namespace TechnoBabelGames
                 case LinePointsShape.Triangle:
                     eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Triangle;
                     break;
+                case LinePointsShape.Square:
+                    eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Square;
+                    break;
                 default:
                     break;
             }
+
+            eqsLineRendererAddPositions.pointOffset = shapeSize;
+
 
             //Create Child Objects
             GameObject pointsGO;
