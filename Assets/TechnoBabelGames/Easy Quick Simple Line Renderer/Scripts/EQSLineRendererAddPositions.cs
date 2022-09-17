@@ -10,12 +10,11 @@ namespace TechnoBabelGames
         private Transform[] points;
         public enum BasicShape { Custom, Preset}
         public BasicShape basicShape;
-        Transform parentTransform;
         public float shapeSize;        
 
         private void OnEnable()
         {
-            parentTransform = transform.GetComponentInParent<Transform>();
+
         }
 
         void Start()
