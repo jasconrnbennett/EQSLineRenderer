@@ -328,7 +328,7 @@ namespace TechnoBabelGames
             else
                 eqsLineRendererAddPositions.basicShape = EQSLineRendererAddPositions.BasicShape.Preset;
 
-            eqsLineRendererAddPositions.pointOffset = shapeSize;
+            eqsLineRendererAddPositions.shapeSize = shapeSize;
 
 
             //Create Child Objects

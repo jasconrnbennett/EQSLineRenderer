@@ -11,7 +11,7 @@ namespace TechnoBabelGames
         public enum BasicShape { Custom, Preset}
         public BasicShape basicShape;
         Transform parentTransform;
-        public float pointOffset;        
+        public float shapeSize;        
 
         private void OnEnable()
         {
@@ -47,12 +47,12 @@ namespace TechnoBabelGames
                 return;
             }
 
-            var transforms = transform.GetComponentsInChildren<Transform>().Skip(1).ToArray();
-            List<Vector2> points = GetPolygonOnACircle(transforms.Length, pointOffset/2, Vector2.zero);
+            //var transforms = transform.GetComponentsInChildren<Transform>().Skip(1).ToArray();
 
-            for (int i = 0; i < transforms.Length; i++)
+            List<Vector2> points = GetPolygonOnACircle(transform.childCount, shapeSize/2, Vector2.zero);
+            for (int i = 0; i < transform.childCount; i++)
             {
-                transforms[i].localPosition = points[i];
+                transform.GetChild(i).localPosition = points[i];
             }
             
             SetPoints();

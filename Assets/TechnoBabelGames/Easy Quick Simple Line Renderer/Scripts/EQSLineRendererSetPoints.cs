@@ -18,7 +18,7 @@ namespace TechnoBabelGames
             monoScript = (EQSLineRendererAddPositions)target;
             lineRenderer = monoScript.GetComponent<LineRenderer>();
             lineRendererWidth = lineRenderer.startWidth;
-            shapeSize = monoScript.pointOffset;
+            shapeSize = monoScript.shapeSize;
         }
 
         public override void OnInspectorGUI()
@@ -43,8 +43,17 @@ namespace TechnoBabelGames
             lineRendererWidth = EditorGUILayout.Slider("Line Width", lineRendererWidth, 0.01f, 1);
 
             GUILayout.Space(8);
-
-            lineRenderer.loop = EditorGUILayout.Toggle("Close Loop", lineRenderer.loop);
+            bool checkLoop = lineRenderer.loop;
+           
+            //Debug.Log("Loopsss");
+            checkLoop = EditorGUILayout.Toggle("Close Loop", checkLoop);
+            if (checkLoop != lineRenderer.loop)
+            {
+                Debug.Log("In IF");
+                Undo.RecordObject(monoScript.gameObject, "Change to Close Loop status");
+                Undo.FlushUndoRecordObjects();
+                lineRenderer.loop = checkLoop;
+            }
             EditorGUI.indentLevel--;
         }
 
@@ -79,9 +88,9 @@ namespace TechnoBabelGames
 
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)) || shapeSize != monoScript.pointOffset)
+                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)) || shapeSize != monoScript.shapeSize)
                     {
-                        monoScript.pointOffset = shapeSize;
+                        monoScript.shapeSize = shapeSize;
                         lineRenderer.startWidth = lineRenderer.endWidth = lineRendererWidth;
                         monoScript.DrawBasicShape(monoScript.basicShape);
                     }
