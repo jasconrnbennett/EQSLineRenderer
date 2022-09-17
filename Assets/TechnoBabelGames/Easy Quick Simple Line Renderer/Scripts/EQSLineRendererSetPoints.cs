@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using System;
 
 namespace TechnoBabelGames
 {
@@ -8,17 +9,22 @@ namespace TechnoBabelGames
     {
 
         EQSLineRendererAddPositions monoScript;
+        EQSLineRendererProperties lineRendererProperties;
         LineRenderer lineRenderer;
-        float lineRendererWidth;
-        float shapeSize;
+        //float lineRendererWidth;
+        //float shapeSize;
         bool showShapeAdjustments = false;
 
         private void OnEnable()
         {
             monoScript = (EQSLineRendererAddPositions)target;
             lineRenderer = monoScript.GetComponent<LineRenderer>();
-            lineRendererWidth = lineRenderer.startWidth;
-            shapeSize = monoScript.shapeSize;
+            lineRendererProperties = new EQSLineRendererProperties();
+            lineRendererProperties.lineWidth = lineRenderer.startWidth;
+            lineRendererProperties.shapeSize = monoScript.shapeSize;
+            lineRendererProperties.closeLoop = lineRenderer.loop;
+            //lineRendererWidth = lineRenderer.startWidth;
+            //shapeSize = monoScript.shapeSize;
         }
 
         public override void OnInspectorGUI()
@@ -30,7 +36,7 @@ namespace TechnoBabelGames
             GUILayoutShapeAdjustments();
             
             
-            lineRenderer.startWidth = lineRenderer.endWidth = lineRendererWidth;            
+            lineRenderer.startWidth = lineRenderer.endWidth = lineRendererProperties.lineWidth;            
         }
 
         void GUILayoutLineRendererPorperties()
@@ -40,20 +46,12 @@ namespace TechnoBabelGames
             GUILayout.Space(8);
 
             EditorGUI.indentLevel++;
-            lineRendererWidth = EditorGUILayout.Slider("Line Width", lineRendererWidth, 0.01f, 1);
+            lineRendererProperties.lineWidth = EditorGUILayout.Slider("Line Width", lineRendererProperties.lineWidth, 0.01f, 1);
 
             GUILayout.Space(8);
-            bool checkLoop = lineRenderer.loop;
-           
-            //Debug.Log("Loopsss");
-            checkLoop = EditorGUILayout.Toggle("Close Loop", checkLoop);
-            if (checkLoop != lineRenderer.loop)
-            {
-                Debug.Log("In IF");
-                Undo.RecordObject(monoScript.gameObject, "Change to Close Loop status");
-                Undo.FlushUndoRecordObjects();
-                lineRenderer.loop = checkLoop;
-            }
+
+            lineRendererProperties.closeLoop = EditorGUILayout.Toggle("Close Loop", lineRendererProperties.closeLoop);
+            lineRenderer.loop = lineRendererProperties.closeLoop;
             EditorGUI.indentLevel--;
         }
 
@@ -78,7 +76,7 @@ namespace TechnoBabelGames
 
                     GUILayout.Space(8);
 
-                    shapeSize = EditorGUILayout.Slider("Shape Size", shapeSize, 0.1f, 50);
+                    lineRendererProperties.shapeSize = EditorGUILayout.Slider("Shape Size", lineRendererProperties.shapeSize, 0.1f, 50);
 
                     GUILayout.Space(8);
 
@@ -88,10 +86,10 @@ namespace TechnoBabelGames
 
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)) || shapeSize != monoScript.shapeSize)
+                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)) || lineRendererProperties.shapeSize != monoScript.shapeSize)
                     {
-                        monoScript.shapeSize = shapeSize;
-                        lineRenderer.startWidth = lineRenderer.endWidth = lineRendererWidth;
+                        monoScript.shapeSize = lineRendererProperties.shapeSize;
+                        lineRenderer.startWidth = lineRenderer.endWidth = lineRendererProperties.lineWidth;
                         monoScript.DrawBasicShape(monoScript.basicShape);
                     }
                     GUILayout.FlexibleSpace();
@@ -113,6 +111,14 @@ namespace TechnoBabelGames
 
         }        
 
+    }
+
+    [Serializable]
+    public class EQSLineRendererProperties
+    {
+        public bool closeLoop;
+        public float lineWidth;
+        public float shapeSize;
     }
 }
 
