@@ -21,7 +21,6 @@ namespace TechnoBabelGames
         LinePointsShape linePointsShape;
         bool roundCorners;
         bool roundEndCaps;
-        Vector2 scrollPosition;
         bool closeLineLoop = false;
         float shapeSize = 3;
 
@@ -29,7 +28,7 @@ namespace TechnoBabelGames
         public static void ShowWindow()
         {
             TBLineRendererTool window = (TBLineRendererTool)GetWindow(typeof(TBLineRendererTool), false, "TB Line Renderer");
-            window.minSize = /*window.maxSize =*/ new Vector2(400, 400);
+            window.minSize = new Vector2(400, 400);
         }
 
         private void OnGUI()
@@ -51,8 +50,6 @@ namespace TechnoBabelGames
             GUILayoutButton();
             GUILayout.Space(8);
             DrawUILine(Color.gray);
-
-            //GUILayoutTestFields();
         }
 
         //Width & Rounded Corners/End Caps
@@ -243,7 +240,8 @@ namespace TechnoBabelGames
             //Add Component to Parent
             lineContainerGO.AddComponent<TBLineRendererComponent>();
             TBLineRenderer lineRenderer = new TBLineRenderer();
-            lineContainerGO.GetComponent<TBLineRendererComponent>().lineRendererProperties = lineRenderer;
+            TBLineRendererComponent lineRendererComponent = lineContainerGO.GetComponent<TBLineRendererComponent>();
+            lineRendererComponent.lineRendererProperties = lineRenderer;
 
             //Assign properties to TBLineRenderer
             lineRenderer.lineWidth = lineWidth;
@@ -298,7 +296,8 @@ namespace TechnoBabelGames
                 pointsGO.hideFlags = HideFlags.HideInInspector;
             }
 
-            lineContainerGO.GetComponent<TBLineRendererComponent>().DrawBasicShape();
+            lineRendererComponent.SetLineRendererProperties();
+            lineRendererComponent.DrawBasicShape();
         }
     }
 }

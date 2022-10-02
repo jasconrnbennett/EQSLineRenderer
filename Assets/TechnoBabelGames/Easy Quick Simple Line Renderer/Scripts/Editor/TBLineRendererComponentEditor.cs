@@ -12,6 +12,8 @@ namespace TechnoBabelGames
         TBLineRenderer lineRendererProperties;
         bool showShapeAdjustments = false;
         float adjustedShapeSize;
+        float adjustedLineWidth;
+        bool changeCloseLoop;
 
         private void OnEnable()
         {
@@ -19,6 +21,8 @@ namespace TechnoBabelGames
             lineRendererProperties = lineRendererComponent.lineRendererProperties;
             lineRendererComponent.GetComponent<LineRenderer>().hideFlags = HideFlags.HideInInspector;
             adjustedShapeSize = lineRendererProperties.shapeSize;
+            adjustedLineWidth = lineRendererProperties.lineWidth;
+            changeCloseLoop = lineRendererProperties.closeLoop;
         }
 
         public override void OnInspectorGUI()
@@ -37,11 +41,37 @@ namespace TechnoBabelGames
             GUILayout.Space(8);
 
             EditorGUI.indentLevel++;
-            lineRendererProperties.lineWidth = EditorGUILayout.Slider("Line Width", lineRendererProperties.lineWidth, 0.01f, 1);
+
+            EditorGUI.BeginChangeCheck();
+
+            float undoLineWidth = EditorGUILayout.Slider("Line Width", lineRendererProperties.lineWidth, 0.01f, 1);
+            if(lineRendererProperties.lineWidth != adjustedLineWidth)
+            {
+                adjustedLineWidth = lineRendererProperties.lineWidth;
+                lineRendererComponent.UpdateLineRendererLineWidth();
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(lineRendererComponent, "Changed Line Width");
+                lineRendererProperties.lineWidth = undoLineWidth;
+            }
 
             GUILayout.Space(8);
 
-            lineRendererProperties.closeLoop = EditorGUILayout.Toggle("Close Loop", lineRendererProperties.closeLoop);
+            EditorGUI.BeginChangeCheck();
+
+            bool undoCloseLoop = EditorGUILayout.Toggle("Close Loop", lineRendererProperties.closeLoop);
+            if(lineRendererProperties.closeLoop != changeCloseLoop)
+            {
+                changeCloseLoop = lineRendererProperties.closeLoop;
+                lineRendererComponent.UpdateLineRendererLoop();
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(lineRendererComponent, "Changed Close Loop toggle");
+                lineRendererProperties.closeLoop = undoCloseLoop;
+            }
+
             EditorGUI.indentLevel--;
         }
 
@@ -66,7 +96,9 @@ namespace TechnoBabelGames
 
                     GUILayout.Space(8);
 
-                    lineRendererProperties.shapeSize = EditorGUILayout.Slider("Shape Size", lineRendererProperties.shapeSize, 0.1f, 50);
+                    EditorGUI.BeginChangeCheck();
+
+                    float undoShapeSize = EditorGUILayout.Slider("Shape Size", lineRendererProperties.shapeSize, 0.1f, 50);
 
                     GUILayout.Space(8);
 
@@ -81,6 +113,13 @@ namespace TechnoBabelGames
                         adjustedShapeSize = lineRendererProperties.shapeSize;
                         lineRendererComponent.DrawBasicShape();
                     }
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(lineRendererComponent, "Changed Shape Size");
+                        lineRendererProperties.shapeSize = undoShapeSize;
+                    }
+
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
 

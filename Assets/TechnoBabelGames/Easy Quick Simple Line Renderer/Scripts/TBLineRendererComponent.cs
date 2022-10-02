@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace TechnoBabelGames
@@ -11,21 +11,16 @@ namespace TechnoBabelGames
         public TBLineRenderer lineRendererProperties;
         private LineRenderer lineRenderer;
 
-        private void OnEnable()
-        {
-            lineRenderer = GetComponent<LineRenderer>();
-        }
-
-        private void OnValidate()
+        private void Reset()
         {
             if (lineRenderer == null)
-                return;
-            
-            if (lineRenderer.startWidth != lineRendererProperties.lineWidth)
-                UpdateLineRendererLineWidth();
+                lineRenderer = GetComponent<LineRenderer>();                
+        }
 
-            if (lineRenderer.loop != lineRendererProperties.closeLoop)
-                UpdateLineRendererLoop();
+        private void OnEnable()
+        {
+            if (lineRenderer == null)
+                lineRenderer = GetComponent<LineRenderer>();
         }
 
         public void SetLineRendererProperties()
@@ -42,6 +37,8 @@ namespace TechnoBabelGames
 
             if (lineRendererProperties.texture != null)
                 lineRenderer.material = lineRendererProperties.texture;
+            else
+                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
 
             if (lineRendererProperties.roundedEndCaps)
                 lineRenderer.numCapVertices = 10;
@@ -49,13 +46,26 @@ namespace TechnoBabelGames
             if (lineRendererProperties.roundedCorners)
                 lineRenderer.numCornerVertices = 10;
 
-            if (lineRendererProperties.axis == TBLineRenderer.Axis.FaceCamera)
+            switch (lineRendererProperties.axis)
             {
-                lineRenderer.alignment = LineAlignment.View;
-            }
-            else
-            {
-                lineRenderer.alignment = LineAlignment.TransformZ;
+                case TBLineRenderer.Axis.FaceCamera:
+                    lineRenderer.alignment = LineAlignment.View;
+                    transform.Rotate(0, 0, 0);
+                    break;
+                case TBLineRenderer.Axis.X:
+                    lineRenderer.alignment = LineAlignment.TransformZ;
+                    transform.Rotate(0, 90, 0);
+                    break;
+                case TBLineRenderer.Axis.Y:
+                    lineRenderer.alignment = LineAlignment.TransformZ;
+                    transform.Rotate(90, 0, 0);
+                    break;
+                case TBLineRenderer.Axis.Z:
+                    lineRenderer.alignment = LineAlignment.TransformZ;
+                    transform.Rotate(0, 0, 90);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -80,7 +90,7 @@ namespace TechnoBabelGames
         {
             Vector3 v3;
 
-            for (int i = 0; i < transform.childCount; i++)  //Start at 1 because the array includes the parent at index 0
+            for (int i = 0; i < transform.childCount; i++)
             {
                 v3 = new Vector3(transform.GetChild(i).position.x, transform.GetChild(i).position.y, transform.GetChild(i).position.z);
                 lineRenderer.SetPosition(i, v3);
@@ -111,13 +121,19 @@ namespace TechnoBabelGames
             return points;
         }
 
-        void UpdateLineRendererLineWidth()
+        public void UpdateLineRendererLineWidth()
         {
+            if (lineRenderer == null || lineRendererProperties == null)
+                return;
+
             lineRenderer.startWidth = lineRenderer.endWidth = lineRendererProperties.lineWidth;
         }
 
-        void UpdateLineRendererLoop()
+        public void UpdateLineRendererLoop()
         {
+            if (lineRenderer == null || lineRendererProperties == null)
+                return;
+
             lineRenderer.loop = lineRendererProperties.closeLoop;
         }
     }
