@@ -1,6 +1,5 @@
 using UnityEditor;
 using UnityEngine;
-using System;
 
 namespace TechnoBabelGames
 {
@@ -131,12 +130,19 @@ namespace TechnoBabelGames
 
         void OnSceneGUI()
         {
-
             if (Event.current.type == EventType.Repaint)
             {
                 lineRendererComponent.SetPoints();
-            }
 
+                for (int i = 0; i < lineRendererComponent.transform.childCount; i++)
+                {
+                    Handles.PositionHandle(
+                    lineRendererComponent.transform.GetChild(i).position,
+                    lineRendererComponent.transform.GetChild(i).rotation
+                    );
+                }
+            }            
         }
+
     }
 }

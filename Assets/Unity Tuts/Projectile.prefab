@@ -62,3 +62,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidbody: {fileID: 3253935429474697162}
+  damageRadius: 0.54
