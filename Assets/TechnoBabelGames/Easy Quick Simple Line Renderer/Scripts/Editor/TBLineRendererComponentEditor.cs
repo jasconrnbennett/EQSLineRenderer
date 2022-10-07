@@ -134,13 +134,13 @@ namespace TechnoBabelGames
             {
                 lineRendererComponent.SetPoints();
 
-                for (int i = 0; i < lineRendererComponent.transform.childCount; i++)
-                {
-                    Handles.PositionHandle(
-                    lineRendererComponent.transform.GetChild(i).position,
-                    lineRendererComponent.transform.GetChild(i).rotation
-                    );
-                }
+                //for (int i = 0; i < lineRendererComponent.transform.childCount; i++)
+                //{
+                //    Handles.PositionHandle(
+                //    lineRendererComponent.transform.GetChild(i).position,
+                //    lineRendererComponent.transform.GetChild(i).rotation
+                //    );
+                //}
             }            
         }
 

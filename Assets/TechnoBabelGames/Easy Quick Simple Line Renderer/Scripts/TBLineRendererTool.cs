@@ -293,7 +293,7 @@ namespace TechnoBabelGames
                 }
                 pointsGO.transform.SetParent(lineContainerGO.transform);
                 pointsGO.GetComponent<TBLineRendererDrawGizmo>().parent = lineContainerGO.GetComponent<TBLineRendererComponent>();
-                pointsGO.hideFlags = HideFlags.HideInInspector;
+                pointsGO.GetComponent<TBLineRendererDrawGizmo>().hideFlags = HideFlags.HideInInspector;
             }
 
             lineRendererComponent.SetLineRendererProperties();

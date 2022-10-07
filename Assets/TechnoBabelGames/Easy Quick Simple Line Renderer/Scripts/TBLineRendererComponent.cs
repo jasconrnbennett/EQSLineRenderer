@@ -19,6 +19,7 @@ namespace TechnoBabelGames
 
         private void OnEnable()
         {
+            Debug.Log("OnEnable"); //Do we ever get here?
             if (lineRenderer == null)
                 lineRenderer = GetComponent<LineRenderer>();
         }
@@ -88,6 +89,12 @@ namespace TechnoBabelGames
 
         public void SetPoints()
         {
+            if (lineRenderer == null)
+            {
+                Debug.Log("LR NULL");
+                SetLineRendererProperties();
+            }                
+            
             Vector3 v3;
 
             for (int i = 0; i < transform.childCount; i++)
