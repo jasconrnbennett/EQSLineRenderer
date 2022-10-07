@@ -90,10 +90,7 @@ namespace TechnoBabelGames
         public void SetPoints()
         {
             if (lineRenderer == null)
-            {
-                Debug.Log("LR NULL");
-                SetLineRendererProperties();
-            }                
+                SetLineRendererProperties();            
             
             Vector3 v3;
 

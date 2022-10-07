@@ -13,6 +13,9 @@ namespace TechnoBabelGames
         float adjustedShapeSize;
         float adjustedLineWidth;
         bool changeCloseLoop;
+        Vector3[] m_HandlePosition;
+        Vector3[] handlePositions { get { return m_HandlePosition; } set { m_HandlePosition = value; } }
+        
 
         private void OnEnable()
         {
@@ -22,6 +25,8 @@ namespace TechnoBabelGames
             adjustedShapeSize = lineRendererProperties.shapeSize;
             adjustedLineWidth = lineRendererProperties.lineWidth;
             changeCloseLoop = lineRendererProperties.closeLoop;
+
+            //SetHandles();
         }
 
         public override void OnInspectorGUI()
@@ -133,16 +138,50 @@ namespace TechnoBabelGames
             if (Event.current.type == EventType.Repaint)
             {
                 lineRendererComponent.SetPoints();
+                //if (test)
+                //    SetHandles();
+            }
 
-                //for (int i = 0; i < lineRendererComponent.transform.childCount; i++)
-                //{
-                //    Handles.PositionHandle(
-                //    lineRendererComponent.transform.GetChild(i).position,
-                //    lineRendererComponent.transform.GetChild(i).rotation
-                //    );
-                //}
-            }            
+            if(m_HandlePosition == null)
+            {
+                m_HandlePosition = new Vector3[lineRendererComponent.transform.childCount];
+            }
+
+            EditorGUI.BeginChangeCheck();
+            Vector3[] newChildPositions = PlaceHandlesOnChildPositions();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                //Undo line here!
+                handlePositions = newChildPositions;
+                MoveChildrenToHandlePositions();
+            }
         }
+
+        Vector3[] PlaceHandlesOnChildPositions()
+        {
+            Vector3[] newVectors = new Vector3[lineRendererComponent.transform.childCount];
+            
+            for (int i = 0; i < newVectors.Length; i++)
+            {
+                Handles.color = Color.yellow;
+
+                newVectors[i] = Handles.PositionHandle(
+                    lineRendererComponent.transform.GetChild(i).position,
+                    lineRendererComponent.transform.GetChild(i).rotation
+                );
+            }
+
+            return newVectors;
+        }
+
+        void MoveChildrenToHandlePositions()
+        {
+            for (int i = 0; i < handlePositions.Length; i++)
+            {
+                lineRendererComponent.transform.GetChild(i).position = handlePositions[i];
+            }
+        }        
 
     }
 }
