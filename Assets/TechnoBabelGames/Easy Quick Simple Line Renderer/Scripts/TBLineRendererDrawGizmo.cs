@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace TechnoBabelGames
@@ -16,7 +17,11 @@ namespace TechnoBabelGames
             {
                 Gizmos.DrawLine(this.transform.position, targetPoint.transform.position);
             }
-            Gizmos.DrawWireSphere(this.transform.position, 0.2f);
+
+            if (!Selection.Contains(parent.gameObject))
+            {
+                Gizmos.DrawWireSphere(this.transform.position, 0.2f);
+            }            
 
             parent.SetPoints();
         }

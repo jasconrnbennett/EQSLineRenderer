@@ -163,10 +163,12 @@ namespace TechnoBabelGames
             Vector3[] newVectors = new Vector3[lineRendererComponent.transform.childCount];
 
             GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.magenta;
-            style.fontSize = 18;
+            style.normal.textColor = Color.white;
+            style.fontStyle = FontStyle.Bold;
             style.alignment = TextAnchor.MiddleCenter;
-            
+            style.normal.background = (Texture2D)EditorGUIUtility.IconContent("AvatarController.Layer").image;
+
+
             for (int i = 0; i < newVectors.Length; i++)
             {
                 Handles.color = Color.magenta;
