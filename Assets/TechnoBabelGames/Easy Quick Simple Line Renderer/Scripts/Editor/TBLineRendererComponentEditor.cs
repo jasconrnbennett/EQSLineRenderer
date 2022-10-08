@@ -15,7 +15,8 @@ namespace TechnoBabelGames
         bool changeCloseLoop;
         Vector3[] m_HandlePosition;
         Vector3[] handlePositions { get { return m_HandlePosition; } set { m_HandlePosition = value; } }
-        
+
+        float range = 0f;
 
         private void OnEnable()
         {
@@ -138,8 +139,7 @@ namespace TechnoBabelGames
             if (Event.current.type == EventType.Repaint)
             {
                 lineRendererComponent.SetPoints();
-                //if (test)
-                //    SetHandles();
+                //CreateCustomHandles();
             }
 
             if(m_HandlePosition == null)
@@ -155,7 +155,7 @@ namespace TechnoBabelGames
                 //Undo line here!
                 handlePositions = newChildPositions;
                 MoveChildrenToHandlePositions();
-            }
+            }            
         }
 
         Vector3[] PlaceHandlesOnChildPositions()
@@ -181,7 +181,113 @@ namespace TechnoBabelGames
             {
                 lineRendererComponent.transform.GetChild(i).position = handlePositions[i];
             }
-        }        
+        }
+
+        void CreateCustomHandles()
+        {
+            
+            Transform transform = lineRendererComponent.transform;
+            Handles.color = Color.yellow;
+            HandleUtility.AddControl(0, 5f);
+            Handles.ArrowHandleCap(
+                0,
+                transform.position + new Vector3(0f, 0f, 0f),
+                transform.rotation * Quaternion.LookRotation(Vector3.right),
+                0.5f,
+                EventType.Repaint
+            );
+            Handles.color = Color.magenta;
+            Handles.ArrowHandleCap(
+                1,
+                transform.position + new Vector3(0f, 0f, 0f),
+                transform.rotation * Quaternion.LookRotation(Vector3.up),
+                0.5f,
+                EventType.Repaint
+            );
+            Handles.color = Color.white;
+            Handles.ArrowHandleCap(
+                2,
+                transform.position + new Vector3(0f, 0f, 0f),
+                transform.rotation * Quaternion.LookRotation(Vector3.forward),
+                0.5f,
+                EventType.Repaint
+            );
+
+            int controlID = GUIUtility.GetControlID(FocusType.Passive);
+            Vector3 screenPosition = Handles.matrix.MultiplyPoint(transform.position);
+
+            switch (Event.current.GetTypeForControl(controlID))
+            {
+                case EventType.Layout:
+                    Debug.Log("Layout or Repaint?");
+                    HandleUtility.AddControl(
+                        controlID,
+                        HandleUtility.DistanceToCircle(screenPosition, 1.0f)
+                    );
+                    break;
+
+                case EventType.MouseDown:
+                    if (HandleUtility.nearestControl == controlID)
+                    {
+                        Debug.Log("MouseDown");
+                        // Respond to a press on this handle. Drag starts automatically.
+                        GUIUtility.hotControl = controlID;
+                        Event.current.Use();
+                    }
+                    break;
+
+                case EventType.MouseUp:
+                    if (GUIUtility.hotControl == controlID)
+                    {
+                        Debug.Log("MouseUp");
+                        // Respond to a release on this handle. Drag stops automatically.
+                        GUIUtility.hotControl = 0;
+                        Event.current.Use();
+                    }
+                    break;
+
+                case EventType.MouseDrag:
+                    if (GUIUtility.hotControl == controlID)
+                    {
+                        Debug.Log("MouseDrag");
+                        // Do whatever with mouse deltas here
+                        GUI.changed = true;
+                        Event.current.Use();
+
+                        range = range + Time.deltaTime;
+
+                        if (range > 0.1f)
+                        {
+                            Event e = Event.current;
+                            Debug.Log(e.mousePosition);
+                            range = 0.0f;
+                        }
+                    }
+                    break;
+            }
+
+            switch (Event.current.type)
+            {
+                case EventType.MouseDown:
+                    Debug.Log("MouseDown2");
+                    break;
+                case EventType.MouseUp:
+                    Debug.Log("MouseUp2");
+                    break;
+                case EventType.MouseMove:
+                    Debug.Log("MouseMove2");
+                    break;
+                case EventType.MouseDrag:
+                    Debug.Log("MouseDrag2");
+                    break;
+                
+                default:
+                    break;
+            }
+
+
+
+        }
 
     }
 }

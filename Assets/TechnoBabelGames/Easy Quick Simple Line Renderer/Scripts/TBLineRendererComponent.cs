@@ -14,7 +14,7 @@ namespace TechnoBabelGames
         private void Reset()
         {
             if (lineRenderer == null)
-                lineRenderer = GetComponent<LineRenderer>();                
+                lineRenderer = GetComponent<LineRenderer>();
         }
 
         private void OnEnable()
@@ -51,19 +51,19 @@ namespace TechnoBabelGames
             {
                 case TBLineRenderer.Axis.FaceCamera:
                     lineRenderer.alignment = LineAlignment.View;
-                    transform.Rotate(0, 0, 0);
+                    transform.eulerAngles = new Vector3(0, 0, 0);
                     break;
                 case TBLineRenderer.Axis.X:
                     lineRenderer.alignment = LineAlignment.TransformZ;
-                    transform.Rotate(0, 90, 0);
+                    transform.eulerAngles = new Vector3(0, 90, 0);
                     break;
                 case TBLineRenderer.Axis.Y:
                     lineRenderer.alignment = LineAlignment.TransformZ;
-                    transform.Rotate(90, 0, 0);
+                    transform.eulerAngles = new Vector3(90, 0, 0);
                     break;
                 case TBLineRenderer.Axis.Z:
                     lineRenderer.alignment = LineAlignment.TransformZ;
-                    transform.Rotate(0, 0, 90);
+                    transform.eulerAngles = new Vector3(0, 0, 0);
                     break;
                 default:
                     break;
@@ -90,8 +90,8 @@ namespace TechnoBabelGames
         public void SetPoints()
         {
             if (lineRenderer == null)
-                SetLineRendererProperties();            
-            
+                lineRenderer = GetComponent<LineRenderer>();
+
             Vector3 v3;
 
             for (int i = 0; i < transform.childCount; i++)
