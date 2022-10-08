@@ -161,10 +161,21 @@ namespace TechnoBabelGames
         Vector3[] PlaceHandlesOnChildPositions()
         {
             Vector3[] newVectors = new Vector3[lineRendererComponent.transform.childCount];
+
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.magenta;
+            style.fontSize = 18;
+            style.alignment = TextAnchor.MiddleCenter;
             
             for (int i = 0; i < newVectors.Length; i++)
             {
-                Handles.color = Color.yellow;
+                Handles.color = Color.magenta;
+                
+                Handles.Label(
+                    lineRendererComponent.transform.GetChild(i).position,
+                    lineRendererComponent.transform.GetChild(i).name,
+                    style
+                );
 
                 newVectors[i] = Handles.PositionHandle(
                     lineRendererComponent.transform.GetChild(i).position,
