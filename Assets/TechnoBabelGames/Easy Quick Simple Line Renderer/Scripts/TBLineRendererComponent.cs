@@ -77,6 +77,7 @@ namespace TechnoBabelGames
         {
             if(lineRendererProperties.shape == TBLineRenderer.Shape.None)
             {
+                RandomizeChildTransforms();
                 SetPoints();
                 return;
             }
@@ -126,6 +127,21 @@ namespace TechnoBabelGames
             }
 
             return points;
+        }
+
+        void RandomizeChildTransforms()
+        {
+            Transform startingTransform = this.transform;
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).localPosition = new Vector3(
+                    startingTransform.localPosition.x + Random.Range(-1f, 2f),
+                    startingTransform.localPosition.y + Random.Range(-1f, 2f),
+                    startingTransform.localPosition.z
+                    );
+                startingTransform = transform.GetChild(i);
+            }
         }
 
         public void UpdateLineRendererLineWidth()

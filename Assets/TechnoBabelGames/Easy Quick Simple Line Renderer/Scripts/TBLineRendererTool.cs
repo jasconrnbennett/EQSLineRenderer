@@ -125,6 +125,8 @@ namespace TechnoBabelGames
                     linePoints = EditorGUILayout.IntField("Points", linePoints);
                     if (linePoints < 2)
                         linePoints = 2;
+                    else if (linePoints > 10)
+                        linePoints = 10;
 
                     GUILayout.Space(8);
 
