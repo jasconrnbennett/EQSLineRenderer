@@ -311,6 +311,9 @@ namespace TechnoBabelGames
 
             lineRendererComponent.SetLineRendererProperties();
             lineRendererComponent.DrawBasicShape();
+
+            //Automatically select new GameObject
+            Selection.activeGameObject = lineContainerGO;
         }
     }
 }
