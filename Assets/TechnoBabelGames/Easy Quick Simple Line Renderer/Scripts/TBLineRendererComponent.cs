@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace TechnoBabelGames
@@ -13,13 +12,6 @@ namespace TechnoBabelGames
 
         private void Reset()
         {
-            if (lineRenderer == null)
-                lineRenderer = GetComponent<LineRenderer>();
-        }
-
-        private void OnEnable()
-        {
-            Debug.Log("OnEnable"); //Do we ever get here?
             if (lineRenderer == null)
                 lineRenderer = GetComponent<LineRenderer>();
         }

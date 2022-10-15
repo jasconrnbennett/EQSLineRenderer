@@ -5,7 +5,7 @@ namespace TechnoBabelGames
 {
     public class TBLineRendererTool : EditorWindow
     {
-        string lineName = "EQS Line Renderer";
+        string lineName = "New Line Renderer";
         int linePoints = 2;
         float lineWidth = 0.5f;
         Color startColor = Color.white;

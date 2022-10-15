@@ -16,8 +16,6 @@ namespace TechnoBabelGames
         Vector3[] m_HandlePosition;
         Vector3[] handlePositions { get { return m_HandlePosition; } set { m_HandlePosition = value; } }
 
-        float range = 0f;
-
         private void OnEnable()
         {
             lineRendererComponent = (TBLineRendererComponent)target;
@@ -26,8 +24,6 @@ namespace TechnoBabelGames
             adjustedShapeSize = lineRendererProperties.shapeSize;
             adjustedLineWidth = lineRendererProperties.lineWidth;
             changeCloseLoop = lineRendererProperties.closeLoop;
-
-            //SetHandles();
         }
 
         public override void OnInspectorGUI()
@@ -104,6 +100,16 @@ namespace TechnoBabelGames
                     EditorGUI.BeginChangeCheck();
 
                     float undoShapeSize = EditorGUILayout.Slider("Shape Size", lineRendererProperties.shapeSize, 0.1f, 50);
+                    if (lineRendererProperties.shapeSize != adjustedShapeSize)
+                    {
+                        adjustedShapeSize = lineRendererProperties.shapeSize;
+                        lineRendererComponent.DrawBasicShape();
+                    }
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        Undo.RecordObject(lineRendererComponent, "Changed Shape Size");
+                        lineRendererProperties.shapeSize = undoShapeSize;
+                    }
 
                     GUILayout.Space(8);
 
@@ -113,16 +119,10 @@ namespace TechnoBabelGames
 
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)) || lineRendererProperties.shapeSize != adjustedShapeSize)
+                    if (GUILayout.Button("Reset Shape", GUILayout.Width(100), GUILayout.Height(30)))
                     {
-                        adjustedShapeSize = lineRendererProperties.shapeSize;
+                        Undo.RecordObjects(lineRendererComponent.GetComponentsInChildren<Transform>(), "Reset Shape");
                         lineRendererComponent.DrawBasicShape();
-                    }
-
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(lineRendererComponent, "Changed Shape Size");
-                        lineRendererProperties.shapeSize = undoShapeSize;
                     }
 
                     GUILayout.FlexibleSpace();
@@ -139,7 +139,6 @@ namespace TechnoBabelGames
             if (Event.current.type == EventType.Repaint)
             {
                 lineRendererComponent.SetPoints();
-                //CreateCustomHandles();
             }
 
             if(m_HandlePosition == null)
@@ -152,7 +151,7 @@ namespace TechnoBabelGames
 
             if (EditorGUI.EndChangeCheck())
             {
-                //Undo line here!
+                Undo.RecordObjects(lineRendererComponent.GetComponentsInChildren<Transform>(), "Moved line point by handle");
                 handlePositions = newChildPositions;
                 MoveChildrenToHandlePositions();
             }            
@@ -171,8 +170,6 @@ namespace TechnoBabelGames
 
             for (int i = 0; i < newVectors.Length; i++)
             {
-                Handles.color = Color.magenta;
-                
                 Handles.Label(
                     lineRendererComponent.transform.GetChild(i).position,
                     lineRendererComponent.transform.GetChild(i).name,
@@ -194,113 +191,7 @@ namespace TechnoBabelGames
             {
                 lineRendererComponent.transform.GetChild(i).position = handlePositions[i];
             }
-        }
-
-        void CreateCustomHandles()
-        {
-            
-            Transform transform = lineRendererComponent.transform;
-            Handles.color = Color.yellow;
-            HandleUtility.AddControl(0, 5f);
-            Handles.ArrowHandleCap(
-                0,
-                transform.position + new Vector3(0f, 0f, 0f),
-                transform.rotation * Quaternion.LookRotation(Vector3.right),
-                0.5f,
-                EventType.Repaint
-            );
-            Handles.color = Color.magenta;
-            Handles.ArrowHandleCap(
-                1,
-                transform.position + new Vector3(0f, 0f, 0f),
-                transform.rotation * Quaternion.LookRotation(Vector3.up),
-                0.5f,
-                EventType.Repaint
-            );
-            Handles.color = Color.white;
-            Handles.ArrowHandleCap(
-                2,
-                transform.position + new Vector3(0f, 0f, 0f),
-                transform.rotation * Quaternion.LookRotation(Vector3.forward),
-                0.5f,
-                EventType.Repaint
-            );
-
-            int controlID = GUIUtility.GetControlID(FocusType.Passive);
-            Vector3 screenPosition = Handles.matrix.MultiplyPoint(transform.position);
-
-            switch (Event.current.GetTypeForControl(controlID))
-            {
-                case EventType.Layout:
-                    Debug.Log("Layout or Repaint?");
-                    HandleUtility.AddControl(
-                        controlID,
-                        HandleUtility.DistanceToCircle(screenPosition, 1.0f)
-                    );
-                    break;
-
-                case EventType.MouseDown:
-                    if (HandleUtility.nearestControl == controlID)
-                    {
-                        Debug.Log("MouseDown");
-                        // Respond to a press on this handle. Drag starts automatically.
-                        GUIUtility.hotControl = controlID;
-                        Event.current.Use();
-                    }
-                    break;
-
-                case EventType.MouseUp:
-                    if (GUIUtility.hotControl == controlID)
-                    {
-                        Debug.Log("MouseUp");
-                        // Respond to a release on this handle. Drag stops automatically.
-                        GUIUtility.hotControl = 0;
-                        Event.current.Use();
-                    }
-                    break;
-
-                case EventType.MouseDrag:
-                    if (GUIUtility.hotControl == controlID)
-                    {
-                        Debug.Log("MouseDrag");
-                        // Do whatever with mouse deltas here
-                        GUI.changed = true;
-                        Event.current.Use();
-
-                        range = range + Time.deltaTime;
-
-                        if (range > 0.1f)
-                        {
-                            Event e = Event.current;
-                            Debug.Log(e.mousePosition);
-                            range = 0.0f;
-                        }
-                    }
-                    break;
-            }
-
-            switch (Event.current.type)
-            {
-                case EventType.MouseDown:
-                    Debug.Log("MouseDown2");
-                    break;
-                case EventType.MouseUp:
-                    Debug.Log("MouseUp2");
-                    break;
-                case EventType.MouseMove:
-                    Debug.Log("MouseMove2");
-                    break;
-                case EventType.MouseDrag:
-                    Debug.Log("MouseDrag2");
-                    break;
-                
-                default:
-                    break;
-            }
-
-
-
-        }
+        }        
 
     }
 }
