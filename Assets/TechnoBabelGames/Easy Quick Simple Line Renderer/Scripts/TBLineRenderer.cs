@@ -17,7 +17,7 @@ namespace TechnoBabelGames
         public TextureMode textureMode;
         public Shape shape;
         public Axis axis;
-        public enum TextureMode { Stretch, Tile }
+        public enum TextureMode { None, Stretch, Tile }
         public enum Shape { None, Line, Triangle, Square, Pentagon, Hexagon, Heptagon, Octagon, Nonagon, Decagon }
         public enum Axis { FaceCamera, X, Y, Z }
     }

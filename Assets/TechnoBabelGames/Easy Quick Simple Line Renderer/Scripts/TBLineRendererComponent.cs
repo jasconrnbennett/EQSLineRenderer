@@ -26,12 +26,23 @@ namespace TechnoBabelGames
             lineRenderer.positionCount = lineRendererProperties.linePoints;            
             lineRenderer.startColor = lineRendererProperties.startColor;
             lineRenderer.endColor = lineRendererProperties.endColor;
-            lineRenderer.textureMode = (LineTextureMode)lineRendererProperties.textureMode;
 
-            if (lineRendererProperties.texture != null)
-                lineRenderer.material = lineRendererProperties.texture;
-            else
-                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            switch (lineRendererProperties.textureMode)
+            {
+                case TBLineRenderer.TextureMode.None:
+                    lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                    break;
+                case TBLineRenderer.TextureMode.Stretch:
+                    lineRenderer.textureMode = LineTextureMode.Stretch;
+                    lineRenderer.material = lineRendererProperties.texture;
+                    break;
+                case TBLineRenderer.TextureMode.Tile:
+                    lineRenderer.textureMode = LineTextureMode.Tile;
+                    lineRenderer.material = lineRendererProperties.texture;
+                    break;
+                default:
+                    break;
+            }
 
             if (lineRendererProperties.roundedEndCaps)
                 lineRenderer.numCapVertices = 10;
@@ -131,6 +142,15 @@ namespace TechnoBabelGames
                 return;
 
             lineRenderer.loop = lineRendererProperties.closeLoop;
+        }
+
+        public void UpdateLineRendererColor()
+        {
+            if (lineRenderer == null || lineRendererProperties == null)
+                return;
+
+            lineRenderer.startColor = lineRendererProperties.startColor;
+            lineRenderer.endColor = lineRendererProperties.endColor;
         }
     }
 }

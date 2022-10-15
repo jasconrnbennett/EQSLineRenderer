@@ -24,10 +24,10 @@ namespace TechnoBabelGames
         bool closeLineLoop = false;
         float shapeSize = 3;
 
-        [MenuItem("Tools/TechnoBabelGames/TB Line Renderer")]
+        [MenuItem("Tools/TechnoBabelGames/Easy Line Renderer")]
         public static void ShowWindow()
         {
-            TBLineRendererTool window = (TBLineRendererTool)GetWindow(typeof(TBLineRendererTool), false, "TB Line Renderer");
+            TBLineRendererTool window = (TBLineRendererTool)GetWindow(typeof(TBLineRendererTool), false, "Easy Line Renderer");
             window.minSize = new Vector2(400, 400);
         }
 
@@ -96,7 +96,6 @@ namespace TechnoBabelGames
                     lineMaterial = (Material)EditorGUILayout.ObjectField("Material", lineMaterial, typeof(Material), false);
                     if (lineMaterial == null)
                     {
-                        //EditorGUIUtility.SetIconSize(new Vector2(-0.1f, -0.1f));
                         EditorGUILayout.HelpBox("Material is required", MessageType.Info, false);
                     }
                     lineMaterialEnum = (LineMaterial)EditorGUILayout.EnumPopup("Mode", lineMaterialEnum);
@@ -265,7 +264,19 @@ namespace TechnoBabelGames
                     break;
                 case LineColoring.Texture:
                     lineRenderer.texture = lineMaterial;
-                    lineRenderer.textureMode = (TBLineRenderer.TextureMode)lineMaterialEnum;
+
+                    switch (lineMaterialEnum)
+                    {
+                        case LineMaterial.Stretch:
+                            lineRenderer.textureMode = TBLineRenderer.TextureMode.Stretch;
+                            break;
+                        case LineMaterial.Tile:
+                            lineRenderer.textureMode = TBLineRenderer.TextureMode.Tile;
+                            break;
+                        default:
+                            break;
+                    }
+
                     lineRenderer.startColor = lineRenderer.endColor = Color.white;
                     break;
                 default:

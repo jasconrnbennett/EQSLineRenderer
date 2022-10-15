@@ -10,9 +10,11 @@ namespace TechnoBabelGames
         TBLineRendererComponent lineRendererComponent;
         TBLineRenderer lineRendererProperties;
         bool showShapeAdjustments = false;
+        bool changeCloseLoop;
         float adjustedShapeSize;
         float adjustedLineWidth;
-        bool changeCloseLoop;
+        Color changeStartColor;
+        Color changeEndColor;
         Vector3[] m_HandlePosition;
         Vector3[] handlePositions { get { return m_HandlePosition; } set { m_HandlePosition = value; } }
 
@@ -24,11 +26,17 @@ namespace TechnoBabelGames
             adjustedShapeSize = lineRendererProperties.shapeSize;
             adjustedLineWidth = lineRendererProperties.lineWidth;
             changeCloseLoop = lineRendererProperties.closeLoop;
+            changeStartColor = lineRendererProperties.startColor;
+            changeEndColor = lineRendererProperties.endColor;
         }
 
         public override void OnInspectorGUI()
         {
             GUILayoutLineRendererPorperties();
+            GUILayout.Space(8);
+            TBLineRendererTool.DrawUILine(Color.gray);
+            GUILayout.Space(8);
+            GUILayoutColorProperties();
             GUILayout.Space(8);
             TBLineRendererTool.DrawUILine(Color.gray);
             GUILayout.Space(8);
@@ -74,6 +82,40 @@ namespace TechnoBabelGames
             }
 
             EditorGUI.indentLevel--;
+        }
+
+        void GUILayoutColorProperties()
+        {
+            EditorGUILayout.LabelField("Color Properties", EditorStyles.boldLabel);
+
+            GUILayout.Space(8);
+
+            EditorGUI.indentLevel++;
+
+            if(lineRendererProperties.textureMode != TBLineRenderer.TextureMode.None)
+            {
+                EditorGUILayout.HelpBox("Lines filled by textures cannot be changed", MessageType.Info);
+            }
+            else
+            {
+                EditorGUI.BeginChangeCheck();
+
+                Color undoStartColor = EditorGUILayout.ColorField("Start Color", lineRendererProperties.startColor);
+                Color undoEndColor = EditorGUILayout.ColorField("End Color", lineRendererProperties.endColor);
+                if (lineRendererProperties.startColor != changeStartColor || lineRendererProperties.endColor != changeEndColor)
+                {
+                    changeStartColor = lineRendererProperties.startColor;
+                    changeEndColor = lineRendererProperties.endColor;
+                    lineRendererComponent.UpdateLineRendererColor();
+                }
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(lineRendererComponent, "Changed Line Color");
+                    lineRendererProperties.startColor = undoStartColor;
+                    lineRendererProperties.endColor = undoEndColor;
+                }
+            }
         }
 
         void GUILayoutShapeAdjustments()
