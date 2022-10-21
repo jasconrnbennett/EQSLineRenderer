@@ -94,7 +94,7 @@ namespace TechnoBabelGames
 
             if(lineRendererProperties.textureMode != TBLineRenderer.TextureMode.None)
             {
-                EditorGUILayout.HelpBox("Lines filled by textures cannot be changed", MessageType.Info);
+                EditorGUILayout.HelpBox("Use " + lineRendererProperties.texture.name + " (Material) to change the appearance of the line", MessageType.Info);
             }
             else
             {
